@@ -67,3 +67,64 @@ type o3 = UppercaseKey<o2>;
 //   NAME: string;
 //   AGE: number;
 // }
+
+/**
+ * Record
+ */
+type t = Record<string, number>;
+const obj: t = {
+  a: 1,
+};
+type UppercaseKey1<Obj extends Record<string, number>> = {
+  [Key in keyof Obj]: Obj[Key];
+};
+type o = {
+  name: number;
+  age: number;
+};
+const obj1: UppercaseKey1<o> = {
+  name: 1,
+  age: 1,
+};
+/**
+ * readonly
+ */
+type ToReadonly<T> = {
+  readonly [key in keyof T]: T[key];
+};
+type t4 = ToReadonly<{
+  name: string;
+  age: number;
+}>;
+// type t4 = {
+//   readonly name: string;
+//   readonly age: number;
+// }
+
+/**
+ * ToPartial
+ * 可选属性
+ */
+type ToPartial<T> = {
+  [Key in keyof T]?: T[Key];
+};
+type t5 = ToPartial<{ name: string }>;
+
+/**
+ * ToMutable
+ * 去掉 readonly
+ */
+
+type ToMutable<T> = {
+  -readonly [Key in keyof T]: T[Key];
+};
+type t6 = ToMutable<{ readonly name: string }>;
+
+/**
+ * ToRequired
+ * 去掉修饰符
+ */
+type ToRequired<T> = {
+  [Key in keyof T]-?: T[Key];
+};
+type t7 = ToRequired<{ name?: string }>;
