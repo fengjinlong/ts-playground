@@ -128,3 +128,58 @@ type ToRequired<T> = {
   [Key in keyof T]-?: T[Key];
 };
 type t7 = ToRequired<{ name?: string }>;
+
+/**
+ * 点到数组
+ *
+ */
+type t8 = [1, 2, 3, 4, 5];
+type ReverseArr<Arr extends unknown[]> = Arr extends [infer first, ...infer R]
+  ? [...ReverseArr<R>, first]
+  : Arr;
+type t88 = ReverseArr<t8>;
+// type t88 = [5, 4, 3, 2, 1]
+
+/**
+ * 查找某个元素
+ * [1,2,3,4,5] 5 true
+ */
+
+type IsEqual<A, B> = (A extends B ? true : false) &
+  (B extends A ? true : false);
+
+// type aa = IsEqual<1, 1>; true
+type Includes<Arr extends unknown[], FindItem> = Arr extends [
+  infer F,
+  ...infer Other
+]
+  ? IsEqual<F, FindItem> extends true
+    ? true
+    : Includes<Other, FindItem>
+  : false;
+// type t9 = Includes<[1, 2, 3, 4, 5], 5>; true
+
+/**
+ * 构造数组
+ */
+type BuildArray<
+  Length extends number,
+  Ele,
+  Arr extends unknown[] = []
+> = Arr["length"] extends Length ? Arr : BuildArray<Length, Ele, [...Arr, Ele]>;
+
+type t10 = BuildArray<2, number>; // [number, number]
+type t12 = BuildArray<2, 1>; // [1, 1];
+
+/**
+ * 字符串递归
+ */
+type ReplaceStr<
+  Str extends string,
+  From extends string,
+  To extends string
+> = Str extends `${infer f}${From}${infer t}`
+  ? `${f}${To}${ReplaceStr<t, From, To>}`
+  : Str;
+type ss = "ccvv";
+type ss1 = ReplaceStr<ss, "c", "m">; // mmvv
