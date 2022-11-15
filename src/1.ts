@@ -183,3 +183,80 @@ type ReplaceStr<
   : Str;
 type ss = "ccvv";
 type ss1 = ReplaceStr<ss, "c", "m">; // mmvv
+
+/**
+ * 分割字符串
+ */
+type StringToUnion<str extends string> = str extends `${infer F}${infer L}`
+  ? F | StringToUnion<L>
+  : never;
+type ss11 = StringToUnion<"dong">; // "d" | "o" | "n" | "g"
+
+/**
+ * 字符串反转
+ */
+
+type ReverseStr<
+  str extends string,
+  R extends string = ""
+> = str extends `${infer F}${infer L}` ? ReverseStr<L, `${F}${R}`> : R;
+type rr = ReverseStr<"abcdef">;
+
+/**
+ * 递归对象
+ */
+
+// 因为 ts 的类型只有被用到的时候才会做计算。
+// 所以可以在前面加上一段 Obj extends never ? never 或者 Obj extends any 等，从而触发计算：
+type DeepReadonly<Obj extends Record<string, any>> = Obj extends any
+  ? {
+      readonly [key in keyof Obj]: Obj[key] extends object
+        ? DeepReadonly<Obj[key]>
+        : Obj[key];
+    }
+  : never;
+type obj = {
+  a: 1;
+  b: {
+    c: 1;
+  };
+};
+type rra = DeepReadonly<obj>;
+// type rra = {
+//   readonly a: 1;
+//   readonly b: {
+//       readonly c: 1;
+//   };
+// }
+
+/**
+ * 数组长度实现加减乘除
+ */
+// add
+
+// 1 构建一个数组
+type BuildArray1<
+  Length extends number,
+  ele = unknown,
+  Arr extends unknown[] = []
+> = Arr["length"] extends Length
+  ? Arr
+  : BuildArray1<Length, ele, [...Arr, ele]>;
+
+type arr = BuildArray1<3, 1>; // [1,1,1]
+// 2 计算加法
+type Add<num1 extends number, num2 extends number> = [
+  ...BuildArray1<num1>,
+  ...BuildArray1<num2>
+]["length"];
+type AddResult = Add<2, 3>; // 5
+
+// 减法
+type Subtract<
+  num1 extends number,
+  num2 extends number
+> = BuildArray1<num1> extends [...BuildArray1<num2>, ...infer L]
+  ? L["length"]
+  : "";
+
+type sub = Subtract<5, 3>; // 2
