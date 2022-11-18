@@ -296,3 +296,28 @@ type GreaterThan<
   : GreaterThan<num1, num2, [...Arr, unknown]>;
 
 type gthan = GreaterThan<3, 11>; // false
+
+type Bem<
+  A extends string,
+  B extends string[],
+  C extends string[]
+> = `${A}__${B[number]}--${C[number]}}`;
+
+// type Br = "a__c--d}" | "a__c--c}" | "a__b--d}" | "a__b--c}"
+type Br = Bem<"a", ["b", "c"], ["c", "d"]>;
+
+type ad = Exclude<"ab", "">;
+
+type Combination<A extends string, B extends string> =
+  | A
+  | B
+  | `${A}${B}`
+  | `${B}${A}`;
+
+// type ab = "a" | "b" | "ba" | "ab"
+type ab = Combination<"a", "b">;
+type AllCombinations<A extends string, B extends string = A> = A extends A
+  ? Combination<A, AllCombinations<Exclude<B, A>>>
+  : never;
+// type ar = "a" | "c" | "b" | "ba" | "cba" | "ab" | "cb" | "bc" | "ac" | "acb" | "abc" | "ca" | "bca" | "cab" | "bac"
+type ar = AllCombinations<"a" | "b" | "c">;
