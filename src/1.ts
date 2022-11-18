@@ -252,11 +252,47 @@ type Add<num1 extends number, num2 extends number> = [
 type AddResult = Add<2, 3>; // 5
 
 // 减法
-type Subtract<
+type Subtract1<
   num1 extends number,
   num2 extends number
 > = BuildArray1<num1> extends [...BuildArray1<num2>, ...infer L]
   ? L["length"]
-  : "";
+  : any;
 
-type sub = Subtract<5, 3>; // 2
+type sub = Subtract1<5, 3>; // 2
+
+type Divide<
+  num1 extends number,
+  num2 extends number,
+  Arr extends unknown[] = []
+> = num1 extends 0
+  ? Arr["length"]
+  : Divide<Subtract1<num1, num2>, num2, [unknown, ...Arr]>;
+
+type tt = Divide<10, 2>; // 5
+
+type StrLen<
+  Str extends string,
+  Arr extends unknown[] = []
+> = Str extends `${infer f}${infer L}`
+  ? StrLen<L, [...Arr, unknown]>
+  : Arr["length"];
+
+type sl = StrLen<"aaaaa">; // 5
+
+/**
+ * 比大小
+ */
+type GreaterThan<
+  num1 extends number,
+  num2 extends number,
+  Arr extends unknown[] = []
+> = num1 extends num2
+  ? false
+  : Arr["length"] extends num2
+  ? true
+  : Arr["length"] extends num1
+  ? false
+  : GreaterThan<num1, num2, [...Arr, unknown]>;
+
+type gthan = GreaterThan<3, 11>; // false
