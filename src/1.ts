@@ -321,3 +321,40 @@ type AllCombinations<A extends string, B extends string = A> = A extends A
   : never;
 // type ar = "a" | "c" | "b" | "ba" | "cba" | "ab" | "cb" | "bc" | "ac" | "acb" | "abc" | "ca" | "bca" | "cab" | "bac"
 type ar = AllCombinations<"a" | "b" | "c">;
+
+type isAny1<T> = "a" extends "b" & T ? true : false;
+type isAny11 = isAny1<any>;
+
+type IsEqual1<A, B> = (A extends B ? true : false) &
+  (B extends A ? true : false);
+type IsEqual11 = IsEqual1<"a", any>;
+
+type IsEqual2<A, B> = (<T>() => T extends A ? 1 : 2) extends <
+  T
+>() => T extends B ? 1 : 2
+  ? true
+  : false;
+type IsEqual21 = IsEqual2<any, any>;
+
+type IsUnion<A, B> = A extends A ? ([B] extends [A] ? false : true) : never;
+type IsUnion1 = IsUnion<1, 1>;
+
+type IsNever<T> = T extends never ? true : false;
+type IsNever1 = IsNever<never>; // never
+
+type IsNever2<T> = [T] extends [never] ? true : false;
+type IsNever21 = IsNever2<never>; // true
+type y1 = [1]["length"]; // 1
+type y2 = number[]["length"]; // number
+
+type NotEqual<A, B> = (<T>() => T extends A ? true : false) extends <
+  T
+>() => T extends B ? true : false
+  ? false
+  : true;
+type aq1 = NotEqual<1, 2>;
+
+type IsTuple<T> = T extends [...pa: infer arr]
+  ? NotEqual<arr["length"], number>
+  : false;
+type IsTuple1 = IsTuple<number[]>;
