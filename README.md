@@ -51,3 +51,31 @@ type IsTuple<T> = T extends [...pa: infer arr]
   ? NotEqual<arr["length"], number>
   : false;
 ```
+
+### GetOptional 提取索引类型中的可选索引
+```ts
+// 这里的 Pick 是 ts 提供的内置高级类型，就是取出某个 Key 构造新的索引类型
+type GetOptional<Obj extends Record<string, any>> = {
+  [Key in keyof Obj as {} extends Pick<Obj, Key> ? Key : never]: Obj[Key];
+};
+
+type GetOptional1 = GetOptional<{ a: string; b?: string }>;
+// type GetOptional1 = {
+//     b?: string | undefined;
+// }
+```
+
+### 过滤所有非可选的索引构造成新的索引类型
+```ts
+type isRequired<Key extends keyof Obj, Obj> = {} extends Pick<Obj, Key>
+  ? never
+  : Key;
+
+type GetRequired3<Obj extends Record<string, any>> = {
+  [Key in keyof Obj as isRequired<Key, Obj>]: Obj[Key];
+};
+type GetRequiredResult = GetRequired3<{
+  name: string;
+  age?: number;
+}>;
+```

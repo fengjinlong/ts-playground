@@ -358,3 +358,21 @@ type IsTuple<T> = T extends [...pa: infer arr]
   ? NotEqual<arr["length"], number>
   : false;
 type IsTuple1 = IsTuple<number[]>;
+
+type GetOptional<Obj extends Record<string, any>> = {
+  [Key in keyof Obj as {} extends Pick<Obj, Key> ? Key : never]: Obj[Key];
+};
+
+type GetOptional1 = GetOptional<{ a: string; b?: string }>;
+
+type isRequired<Key extends keyof Obj, Obj> = {} extends Pick<Obj, Key>
+  ? never
+  : Key;
+
+type GetRequired3<Obj extends Record<string, any>> = {
+  [Key in keyof Obj as isRequired<Key, Obj>]: Obj[Key];
+};
+type GetRequiredResult = GetRequired3<{
+  name: string;
+  age?: number;
+}>;
