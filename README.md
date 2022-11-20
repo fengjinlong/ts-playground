@@ -79,3 +79,64 @@ type GetRequiredResult = GetRequired3<{
   age?: number;
 }>;
 ```
+
+### 去除索引签名
+```ts
+type RemoveIndexSignature<Obj extends Record<string, any>> = {
+  [Key in keyof Obj as Key extends `${infer str}` ? str : never]: Obj[Key];
+};
+type Dong = {
+  [key: string]: any;
+  sleep(): void;
+};
+type Dong2 = RemoveIndexSignature<Dong>;
+// type Dong2 = {
+//   sleep: () => void;
+// }
+```
+
+### 过滤出 class 的 public 的属性
+keyof 只能拿到 class 的 public 索引，private 和 protected 的索引会被忽略。
+```ts
+type ClassPublicProps<Obj extends Record<string, any>> = {
+  [Key in keyof Obj]: Obj[Key];
+};
+
+class Dong3 {
+  public name: string;
+  protected age: number;
+  private hobbies: string[];
+
+  constructor() {
+    this.name = "dong";
+    this.age = 20;
+    this.hobbies = ["sleep", "eat"];
+  }
+}
+type Dong31 = ClassPublicProps<Dong3>;
+// type Dong31 = {
+//   name: string;
+// }
+```
+
+### TypeScript 默认推导出来的类型并不是字面量类型。
+```ts
+const oa = {
+  a: 1,
+  b: 2,
+};
+const oa2 = {
+  a: 1,
+  b: 2,
+} as const;
+type oa11 = typeof oa;
+// type oa11 = {
+//   a: number;
+//   b: number;
+// }
+type oa22 = typeof oa2;
+// type oa22 = {
+//   readonly a: 1;
+//   readonly b: 2;
+// };
+```

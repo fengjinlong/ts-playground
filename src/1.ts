@@ -376,3 +376,53 @@ type GetRequiredResult = GetRequired3<{
   name: string;
   age?: number;
 }>;
+
+type RemoveIndexSignature<Obj extends Record<string, any>> = {
+  [Key in keyof Obj as Key extends `${infer str}` ? str : never]: Obj[Key];
+};
+type Dong = {
+  [key: string]: any;
+  sleep(): void;
+};
+type Dong2 = RemoveIndexSignature<Dong>;
+// type Dong2 = {
+//   sleep: () => void;
+// }
+
+type ClassPublicProps<Obj extends Record<string, any>> = {
+  [Key in keyof Obj]: Obj[Key];
+};
+
+class Dong3 {
+  public name: string;
+  protected age: number;
+  private hobbies: string[];
+
+  constructor() {
+    this.name = "dong";
+    this.age = 20;
+    this.hobbies = ["sleep", "eat"];
+  }
+}
+type Dong31 = ClassPublicProps<Dong3>;
+// type Dong31 = {
+//   name: string;
+// }
+const oa = {
+  a: 1,
+  b: 2,
+};
+const oa2 = {
+  a: 1,
+  b: 2,
+} as const;
+type oa11 = typeof oa;
+// type oa11 = {
+//   a: number;
+//   b: number;
+// }
+type oa22 = typeof oa2;
+// type oa22 = {
+//   readonly a: 1;
+//   readonly b: 2;
+// };
