@@ -1,4 +1,3 @@
-# ts-playground
 
 # 特殊类型要记牢
 ### isAny
@@ -152,7 +151,7 @@ type oa22 = typeof oa2;
 9. 默认推导出来的不是字面量类型，加上 as const 可以推导出字面量类型，但带有 readonly 修饰，这样模式匹配的时候也得加上 readonly 才行
 
 
-## 类型体操顺口溜
+# 类型体操顺口溜
 
 模式匹配做提取，重新构造做变换。
 
@@ -253,3 +252,132 @@ type merge<obj1 extends object, obj2 extends object> = {
 type m1 = merge<{ a: 1 }, { b: 2 }>;
 
 ```
+
+# TypeScript 内置了哪些高级类型
+### Parameters
+```ts
+type Parameters<T extends (...args: any) => any> = T extends (
+  ...args: infer P
+) => any
+  ? P
+  : never;
+// Parameters 用于提取函数类型的参数类型
+type pas = Parameters<(a: string, b: number) => void>;
+// type pas = [a: string, b: number]
+```
+
+### ReturnType
+```ts
+type ReturnType<T extends (...args: any) => any> = T extends (
+  ...args: any
+) => infer R
+  ? R
+  : any;
+```
+### ThisParameterType
+```ts
+type Person = {
+    name: string
+};
+
+function hello(this: Person) {
+    console.log(this.name);
+}
+
+hello.call({name:''});
+
+type ThisParameterTypeRes = ThisParameterType<typeof hello>;
+
+// type ThisParameterTypeRes = {
+//     name: 'guang';
+// }
+
+// 原理
+type ThisParameterType<T> = T extends (this: infer U, ...args: any[]) => any
+  ? U
+  : unknown;
+```
+
+### 删除 this 的类型可以用 OmitThisParameter。
+```ts
+// 原理
+type OmitThisParameter<T> = unknown extends ThisParameterType<T>
+  ? T
+  : T extends (...a: infer P) => infer R
+  ? (...a: P) => R
+  : T;
+
+type Oo = {
+  name: string;
+};
+function Fun(this: Oo, age: number) {}
+type delthis = OmitThisParameter<typeof Fun>;
+// type delthis = (age: number) => void
+```
+
+### Partial 把索引变为可选
+```ts
+// 实现原理
+type Partial<T> = {
+    [P in keyof T]?: T[P];
+};
+```
+
+### Required 去掉可选，也就是 Required 类型
+```ts
+// 实现原理
+
+type Required<T> = {
+  [P in keyof T]-?: T[P];
+};
+```
+
+### Readonly
+### Pick
+```ts
+type Pick<T, K extends keyof T> = {
+  [P in K]: T[P];
+};
+```
+
+### Exclude
+当想从一个联合类型中去掉一部分类型时，可以用 Exclude 类型
+```ts
+type Exclude<T, U> = T extends U ? never : T;
+```
+
+### Extract
+Exclude 反过来就是 Extract，也就是取交集
+```ts
+type Extract<T, U> = T extends U ? T : never;
+```
+
+### Omit delete some property
+Pick 可以取出索引类型的一部分索引构造成新的索引类型，那反过来就是去掉这部分索引构造成新的索引类型
+```ts
+type del<T, D extends keyof any> = Pick<T, Exclude<keyof T, D>>;
+type ddd = del<{ a: string; b: number }, "a">;
+
+```
+
+### NonNullable 就是用于判断是否为非空类型，也就是不是 null 或者 undefined 的类型的
+```ts
+type NonNullable<T> = T extends null | undefined ? never : T;
+```
+
+### Uppercase、Lowercase、Capitalize、Uncapitalize
+四个类型是分别实现大写、小写、首字母大写、去掉首字母大写的
+
+### 总结
+
+1. 比如用模式匹配可以实现：Parameters、ReturnType、ConstructorParameters、InstanceType、ThisParameterType。
+
+2. 用模式匹配 + 重新构造可以实现：OmitThisParameter
+
+3. 用重新构造可以实现：Partial、Required、Readonly、Pick、Record
+
+4. 用模式匹配 + 递归可以实现： Awaited
+
+5. 用联合类型在分布式条件类型的特性可以实现： Exclude
+
+6. 此外还有 NonNullable 和四个编译器内部实现的类型：Uppercase、Lowercase、Capitalize、Uncapitalize。

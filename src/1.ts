@@ -492,3 +492,45 @@ type merge<obj1 extends object, obj2 extends object> = {
     : never;
 };
 type m1 = merge<{ a: 1 }, { b: 2 }>;
+
+type pas = Parameters<(a: string, b: number) => void>;
+// type pas = [a: string, b: number]
+type Parameters<T extends (...args: any) => any> = T extends (
+  ...args: infer P
+) => any
+  ? P
+  : never;
+type ReturnType<T extends (...args: any) => any> = T extends (
+  ...args: any
+) => infer R
+  ? R
+  : any;
+
+type ti = {
+  name: string;
+};
+function fn2(this: ti) {
+  console.log("aa", this.name);
+}
+fn2.call({ name: "" });
+type hha = typeof fn2;
+
+type ThisParameterType<T> = T extends (this: infer U, ...args: any[]) => any
+  ? U
+  : unknown;
+
+type OmitThisParameter<T> = unknown extends ThisParameterType<T>
+  ? T
+  : T extends (...a: infer P) => infer R
+  ? (...a: P) => R
+  : T;
+
+type Oo = {
+  name: string;
+};
+function Fun(this: Oo, age: number) {}
+type delthis = OmitThisParameter<typeof Fun>;
+// type delthis = (age: number) => void
+
+type del<T, D extends keyof any> = Pick<T, Exclude<keyof T, D>>;
+type ddd = del<{ a: string; b: number }, "a">;
