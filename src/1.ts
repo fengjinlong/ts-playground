@@ -426,3 +426,69 @@ type oa22 = typeof oa2;
 //   readonly a: 1;
 //   readonly b: 2;
 // };
+
+type GetReturnType<F extends Function> = F extends (
+  ...args: any
+) => infer ReturnType
+  ? ReturnType
+  : never;
+type ft = GetReturnType<() => number>;
+// type ft = number
+type UppercaseKey11<Obj extends Record<string, any>> = {
+  [Key in keyof Obj as Uppercase<Key & string>]: Obj[Key];
+};
+type oob = UppercaseKey11<{ a: 1 }>;
+// type oob = {
+//   A: 1;
+// }
+type StringToUnion3<Str extends string> = Str extends `${infer F}${infer L}`
+  ? F | StringToUnion3<L>
+  : never;
+
+type ssr = StringToUnion3<"aqqw">;
+// type ssr = "a" | "q" | "w"
+
+// 减法
+type BuildArray5<
+  L extends number,
+  Ele = unknown,
+  Arr extends unknown[] = []
+> = Arr["length"] extends L ? Arr : BuildArray5<L, Ele, [...Arr, Ele]>;
+type Subtract5<
+  num1 extends number,
+  num2 extends number
+> = BuildArray5<num1> extends [...BuildArray5<num2>, ...infer Rest]
+  ? Rest["length"]
+  : never;
+// 也可以 BuildArray5<num1> extends [...a: BuildArray5<num2>, ...b: infer Rest]
+type amn = Subtract5<20, 12>; // 8
+
+type isAny<T> = 1 extends 2 & T ? true : false;
+type aaad = isAny<any>;
+
+type ParseQueryString<str extends string> = str extends `${infer F}&${infer L}`
+  ? merge<ParseParam<F>, ParseQueryString<L>>
+  : ParseParam<str>;
+type ss123 = "a=1&b=2&c=3";
+// type result = {
+//   a: 1;
+//   b: 2;
+//   c: 3;
+// };
+type result = ParseQueryString<ss123>;
+
+// 处理一个 a=1 -> {a: 1}
+type ParseParam<str extends string> = str extends `${infer f}=${infer l}`
+  ? Record<f, l>
+  : never;
+type pr = ParseParam<"a=1">;
+
+// 合并多个 参数 {a: 1} {b: 2} -> {a:1,b:2}
+type merge<obj1 extends object, obj2 extends object> = {
+  [Key in keyof obj1 | keyof obj2]: Key extends keyof obj1
+    ? obj1[Key]
+    : Key extends keyof obj2
+    ? obj2[Key]
+    : never;
+};
+type m1 = merge<{ a: 1 }, { b: 2 }>;
