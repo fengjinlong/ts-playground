@@ -550,4 +550,36 @@ type CamelCaseToKebabCase<str extends string> =
       ? `${f}${CamelCaseToKebabCase<l>}`
       : `-${Lowercase<f>}${CamelCaseToKebabCase<l>}`
     : str;
-type ccds = CamelCaseToKebabCase<'aaBbCcDd'>
+type ccds = CamelCaseToKebabCase<"aaBbCcDd">;
+
+type Chunk<
+  Arr extends unknown[],
+  ItemLength,
+  CurArr extends unknown[] = [],
+  Res extends unknown[] = []
+> = Arr extends [infer F, ...infer R]
+  ? CurArr["length"] extends ItemLength
+    ? Chunk<R, ItemLength, [F], [...Res, CurArr]>
+    : Chunk<R, ItemLength, [F, ...CurArr], Res>
+  : [...Res, CurArr];
+type aads = Chunk<[1, 2, 3, 4, 5], 2>;
+// type aads = [[2, 1], [4, 3], [5]]
+
+type TupleToNestedObject<Arr extends unknown[], value> = Arr extends [
+  infer F,
+  ...infer R
+]
+  ? {
+      [Key in F as Key extends keyof any ? Key : never]: R extends unknown[]
+        ? TupleToNestedObject<R, value>
+        : value;
+    }
+  : value;
+type ddda = TupleToNestedObject<["a", "b", "c"], 666>;
+// type ddda = {
+//   a: {
+//       b: {
+//           c: 666;
+//       };
+//   };
+// }

@@ -381,3 +381,42 @@ type NonNullable<T> = T extends null | undefined ? never : T;
 5. 用联合类型在分布式条件类型的特性可以实现： Exclude
 
 6. 此外还有 NonNullable 和四个编译器内部实现的类型：Uppercase、Lowercase、Capitalize、Uncapitalize。
+
+# 实战
+### [1,2,3] - [[1,2], [3]]
+```ts
+type Chunk<
+  Arr extends unknown[],
+  ItemLength,
+  CurArr extends unknown[] = [],
+  Res extends unknown[] = []
+> = Arr extends [infer F, ...infer R]
+  ? CurArr["length"] extends ItemLength
+    ? Chunk<R, ItemLength, [F], [...Res, CurArr]>
+    : Chunk<R, ItemLength, [F, ...CurArr], Res>
+  : [...Res, CurArr];
+type aads = Chunk<[1, 2, 3, 4, 5], 2>;
+// type aads = [[2, 1], [4, 3], [5]]
+```
+
+### [] - {}
+```ts
+type TupleToNestedObject<Arr extends unknown[], value> = Arr extends [
+  infer F,
+  ...infer R
+]
+  ? {
+      [Key in F as Key extends keyof any ? Key : never]: R extends unknown[]
+        ? TupleToNestedObject<R, value>
+        : value;
+    }
+  : value;
+type ddda = TupleToNestedObject<["a", "b", "c"], 666>;
+// type ddda = {
+//   a: {
+//       b: {
+//           c: 666;
+//       };
+//   };
+// }
+```
