@@ -534,3 +534,20 @@ type delthis = OmitThisParameter<typeof Fun>;
 
 type del<T, D extends keyof any> = Pick<T, Exclude<keyof T, D>>;
 type ddd = del<{ a: string; b: number }, "a">;
+
+// aa-bb-cc -- aaBbCc
+type KebabCaseToCamelCase<str extends string> =
+  str extends `${infer f}-${infer l}`
+    ? `${f}${KebabCaseToCamelCase<Capitalize<l>>}`
+    : str;
+type aaadq = KebabCaseToCamelCase<"aa-bb-cc">;
+// type aaadq = "aaBbCc"
+
+// aaBbCcDd -- aa-bb-cc-dd
+type CamelCaseToKebabCase<str extends string> =
+  str extends `${infer f}${infer l}`
+    ? f extends Lowercase<f>
+      ? `${f}${CamelCaseToKebabCase<l>}`
+      : `-${Lowercase<f>}${CamelCaseToKebabCase<l>}`
+    : str;
+type ccds = CamelCaseToKebabCase<'aaBbCcDd'>
