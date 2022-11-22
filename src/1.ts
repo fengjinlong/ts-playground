@@ -583,3 +583,19 @@ type ddda = TupleToNestedObject<["a", "b", "c"], 666>;
 //       };
 //   };
 // }
+// 联合类型有分布式条件类型的特性，会分发传入
+type Test<T> = T extends number ? 1 : 2;
+
+type res = Test<1 | "a">; // 2|1
+// boolean 也是联合类型
+type Test1<T> = T extends true ? 1 : 2;
+
+type res1 = Test1<boolean>; // 2 | 1
+// any 会直接返回 trueType 和 falseType 的联合类型
+type Test2<T> = T extends true ? 1 : 2;
+
+type res2 = Test2<any>; // 1 | 2
+// never 会直接返回 never，严格来说这个也是分布式条件类型的一种情况
+type Test3<T> = T extends true ? 1 : 2;
+
+type res3 = Test3<never>; // never
