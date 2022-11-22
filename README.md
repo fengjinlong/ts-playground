@@ -420,3 +420,22 @@ type ddda = TupleToNestedObject<["a", "b", "c"], 666>;
 //   };
 // }
 ```
+
+### infer extends
+4.7 实现了 infer extends 的语法，可以指定推导出的类型，这样简化了类型编程。
+而且，infer extends 还可以用来做类型转换，比如 string 转 number、转 boolean 等。
+要注意的是，4.7 的时候，推导出的只是 extends 约束的类型，比如 number、boolean，但是 4.8 就能推导出字面量类型了，比如 1、2、true、false 这种。
+```ts
+type numi<str> = str extends `${infer m extends number}`?m:str
+type nmuii = numi<'123a'>
+
+enum Code {
+  a = 111,
+  b = 222,
+  c = "abc"
+}
+type aade = `${Code}`
+// 类型变了 type aade = "abc" | "111" | "222"
+type aade1 = numi<`${Code}`>
+// type aade1 = "abc" | 111 | 222
+```
