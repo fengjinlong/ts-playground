@@ -599,3 +599,26 @@ type res2 = Test2<any>; // 1 | 2
 type Test3<T> = T extends true ? 1 : 2;
 
 type res3 = Test3<never>; // never
+
+type numi<str> = str extends `${infer m extends number}` ? m : str;
+type nmuii = numi<"123a">;
+
+enum Code {
+  a = 111,
+  b = 222,
+  c = "abc",
+}
+type aade = `${Code}`;
+// 类型变了 type aade = "abc" | "111" | "222"
+type aade1 = numi<`${Code}`>;
+// type aade1 = "abc" | 111 | 222
+
+type boolean1<str> = str extends `${infer s extends boolean}` ? s : str;
+
+enum Code1 {
+  a = 111,
+  b = "false",
+  c = "",
+}
+type boolean11 = boolean1<`${Code1}`>;
+// type boolean11 = false | "" | "111"
