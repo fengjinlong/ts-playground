@@ -622,3 +622,40 @@ enum Code1 {
 }
 type boolean11 = boolean1<`${Code1}`>;
 // type boolean11 = false | "" | "111"
+
+type fp = Parameters<(a: string, b: number) => void>;
+// type fp = [a: string, b: number]
+
+type Parameters2<T extends (...args: any) => any> = T extends (
+  ...args: infer p
+) => any
+  ? p
+  : never;
+type ffs = Parameters2<(a: string, b: number) => void>;
+
+type FalttenArray<T extends Array<any>> = T extends Array<infer p> ? p : never;
+type tad = FalttenArray<[number, string]>;
+// type tad = string | number
+
+type ReturnType1<T extends (...args: any) => any> = T extends (
+  ...args: any
+) => infer p
+  ? p
+  : never;
+
+type ReturnType111 = ReturnType1<(a: string) => number>; // number
+
+// ConstructorParameters 可以获取类的构造函数的参数类型，存在一个元组中。
+
+interface E {
+  new (name: string, age: number): any;
+  fun: () => any;
+}
+class CC {
+  constructor(name: string, age: number) {}
+}
+type cdd = typeof CC;
+type ddd1 = ConstructorParameters<cdd>;
+type ddd2 = ConstructorParameters<E>;
+// type ddd1 = [name: string, age: number]
+// type ddd2 = [name: string, age: number]

@@ -456,3 +456,31 @@ type aade = `${Code}`
 type aade1 = numi<`${Code}`>
 // type aade1 = "abc" | 111 | 222
 ```
+
+### 函数参数
+```ts
+type fp = Parameters<(a: string, b: number) => void>;
+// type fp = [a: string, b: number]
+type Parameters2<T extends (...args: any) => any> = T extends (
+  ...args: infer p
+) => any
+  ? p
+  : never;
+```
+
+### 获取数组内类型
+```ts
+type FalttenArray<T extends Array<any>> = T extends Array<infer p> ? p : never;
+type tad = FalttenArray<[number, string]>;
+// type tad = string | number
+```
+### 返回值类型
+```ts
+type ReturnType1<T extends (...args: any) => any> = T extends (
+  ...args: any
+) => infer p
+  ? p
+  : never;
+
+  type ReturnType111 = ReturnType1<(a: string)=>number> // number
+```
