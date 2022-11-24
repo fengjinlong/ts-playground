@@ -522,3 +522,62 @@ type ot<T> = {
   [Key in keyof T]: {} extends Pick<T, Key> ? Key : never;
 }[keyof T];
 ```
+
+### PickByValue提取指定值的类型
+```ts
+/**
+ * @example
+ *  type Eg = {
+ *    key1: number;
+ *    key3: number;
+ *  }
+ */
+type PickByValue<T extends object, V> = Pick<
+  T,
+  { [K in keyof T]: T[K] extends V ? K : never }[keyof T]
+>;
+type Eg = PickByValue<{ key1: number; key2: string; key3: number }, number>;
+```
+
+### Intersection<T, U>从T中提取存在于U中的key和对应的类型。（注意，最终是从T中提取key和类型）
+```ts
+type Intersection<T extends object, U extends object> = Pick<T,
+  Extract<keyof T, keyof U> & Extract<keyof U, keyof T>
+>
+
+type Eg = Intersection<{key1: string}, {key1:number, key2: number}>
+// {key1, string}  以前面的为主
+
+```
+
+### Overwrite<T, U>从U中的同名属性的类型覆盖T中的同名属性类型。(后者中的同名属性覆盖前者)
+```ts
+type Overwrite<
+  T extends object,
+  U extends object,
+  I = Diff<T, U> & Intersection<U, T>
+> = Pick<I, keyof I>;
+
+/**
+ * @example
+ * type Eg1 = { key1: number; }
+ */
+type Eg1 = Overwrite<{key1: string}, {key1: number, other: boolean}>
+
+```
+### 如何实现一个Assign<T, U>（类似于Object.assign()）用于合并
+```ts
+/**
+ * @example
+ * type Eg = {
+ *   name: string;
+ *   age: string;
+ *   other: string;
+ * }
+ */
+type Eg3 = Assign<
+  { name: string; age: number },
+  { age: string; other: string }
+>;
+type Assign<T1, T2, T3 = Exclude<T1, T2> & T2> = Pick<T3, keyof T3>;
+```

@@ -39,4 +39,29 @@ type q = Pick<obj2, "a" | "b">;
  *    key3: number;
  *  }
  */
-type Eg = PickByValue<{ key1: number; key2: string; key3: number }, number>;
+type PickByValue<T extends object, V> = Pick<
+  T,
+  { [K in keyof T]: T[K] extends V ? K : never }[keyof T]
+>;
+type Eg = PickByValue<{ key1: number; key2: string; key3: number }, string>;
+
+type Intersection<T extends object, U extends object> = Pick<
+  T,
+  Extract<keyof T, keyof U> & Extract<keyof U, keyof T>
+>;
+
+type Eg1 = Intersection<{ key1: number }, { key1: string; key2: number }>;
+
+/**
+ * @example
+ * type Eg = {
+ *   name: string;
+ *   age: string;
+ *   other: string;
+ * }
+ */
+type Eg3 = Assign<
+  { name: string; age: number },
+  { age: string; other: string }
+>;
+type Assign<T1, T2, T3 = Exclude<T1, T2> & T2> = Pick<T3, keyof T3>;
