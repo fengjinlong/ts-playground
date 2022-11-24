@@ -659,3 +659,12 @@ type ddd1 = ConstructorParameters<cdd>;
 type ddd2 = ConstructorParameters<E>;
 // type ddd1 = [name: string, age: number]
 // type ddd2 = [name: string, age: number]
+type OptionalKeys<T> = {
+  [P in keyof T]: {} extends Pick<T, P> ? P : never;
+}[keyof T];
+// }[keyof T];
+
+type tta = OptionalKeys<{ a: string; b?: string }>;
+type aae = [1, 2, 3, 4];
+type adda<T extends unknown[]> = T[number];
+type adda1 = adda<aae>;

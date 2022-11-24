@@ -484,3 +484,41 @@ type ReturnType1<T extends (...args: any) => any> = T extends (
 
   type ReturnType111 = ReturnType1<(a: string)=>number> // number
 ```
+
+### 数组转联合   对象转联合
+```ts
+// 数组转联合
+type arr = [1, 2, 3, 4];
+type arr1 = arr[number];
+// type arr1 = 1 | 4 | 2 | 3
+
+
+// 对象
+let obj = {
+  a: 1,
+  b: "",
+};
+type objt = typeof obj;
+// type objt = {
+//   a: number;
+//   b: string;
+// }
+type objt1 = objt[keyof objt];
+// type objt1 = string | number
+
+// 对象只转可选类型为联合
+type obj2 = {
+  a?: string;
+  b: number;
+};
+
+type ot<T> = {
+  [Key in keyof T]: 'a';
+}[keyof T];
+type ot1 = ot<obj2>;
+// type ot1 = "a" | undefined
+// 即下
+type ot<T> = {
+  [Key in keyof T]: {} extends Pick<T, Key> ? Key : never;
+}[keyof T];
+```
