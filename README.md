@@ -581,3 +581,17 @@ type Eg3 = Assign<
 >;
 type Assign<T1, T2, T3 = Exclude<T1, T2> & T2> = Pick<T3, keyof T3>;
 ```
+
+### 元组转对象
+```ts
+const tuple = ['tesla', 'model 3', 'model X', 'model Y',1] as const
+type TupleToObject<T  extends readonly (string|number)[]> = {
+  [key in T[number]]: key
+}
+```
+### 数组转对象
+```ts
+type TupleToObject1<T extends string[]> = {
+  [key in T[number]] : key
+}
+```

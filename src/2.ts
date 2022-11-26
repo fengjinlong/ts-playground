@@ -65,3 +65,69 @@ type Eg3 = Assign<
   { age: string; other: string }
 >;
 type Assign<T1, T2, T3 = Exclude<T1, T2> & T2> = Pick<T3, keyof T3>;
+type MyReadonly<T> = {
+  readonly [key in keyof T]: T[key];
+};
+type a = MyReadonly<{ a: string }>;
+
+type TupleToObject<T extends readonly (string | number)[]> = {
+  [key in T[number]]: key;
+};
+const tuple = ["tesla", "model 3", "model X", "model Y", 1] as const;
+type tuple1 = ["tesla", "model 3", "model X", "model Y"];
+type dds = typeof tuple;
+type result = TupleToObject<typeof tuple>;
+
+type TupleToObject1<T extends string[]> = {
+  [key in T[number]]: key;
+};
+type dada = TupleToObject1<tuple1>;
+
+type arr11 = ["a", "b", "c"];
+type arr2 = [3, 2, 1];
+type First<T extends any[]> = T extends [infer f, ...infer r] ? f : never;
+type head1 = First<arr11>; // expected to be 'a'
+type head2 = First<arr2>;
+
+type tesla = ["tesla", "model 3", "model X", "model Y"];
+type spaceX = [
+  "FALCON 9",
+  "FALCON HEAVY",
+  "DRAGON",
+  "STARSHIP",
+  "HUMAN SPACEFLIGHT"
+];
+type Length<T> = T extends any[] ? T["length"] : "";
+type teslaLength = Length<tesla>; // expected 4
+type spaceXLength = Length<spaceX>; // expected 5
+
+type MyExclude<k extends keyof T, a> = k extends a ? never : k;
+type MyExclude1<T, a> = T extends a ? never : T;
+type Result = MyExclude1<"a" | "b" | "c", "a">; // 'b' | 'c'
+
+type ExampleType = Promise<string>;
+type MyAwaited<T> = T extends Promise<infer f> ? f : never;
+type Result1 = MyAwaited<ExampleType>; // string
+
+type If<boo, a, b> = boo extends true ? a : b;
+type A = If<true, "a", "b">; // expected to be 'a'
+type B = If<false, "a", "b">; // expected to be 'b'
+
+type Concat<A extends any[], B extends any[]> = [...A, ...B];
+type Result4 = Concat<[1], [2]>; // expected to be [1, 2]
+type arra = k extends keyof [1][number] | [2, 3][number] ? k : "";
+
+type Includes<Arr extends unknown[], B> = Arr[number] extends B ? true : false;
+type isPillarMen = Includes<["Kars", "Esidisi", "Wamuu", "Santana"], "Dio">; // expected to be `false`
+
+type Push<Arr extends unknown[], e> = [...Arr, e];
+type Result12 = Push<[1, 2], "3">; // [1, 2, '3']
+
+type Unshift<Arr extends unknown[], e> = [e, ...Arr];
+type Resul1t = Unshift<[1, 2], 0>; // [0, 1, 2,]
+
+const foo = (arg1: string, arg2: number): void => {};
+type MyParameters<T extends Function> = T extends (...args: infer aa) => any
+  ? [...aa]
+  : "";
+type FunctionParamsType = MyParameters<typeof foo>; // [arg1: string, arg2: number]
