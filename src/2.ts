@@ -131,3 +131,11 @@ type MyParameters<T extends Function> = T extends (...args: infer aa) => any
   ? [...aa]
   : "";
 type FunctionParamsType = MyParameters<typeof foo>; // [arg1: string, arg2: number]
+
+
+function add(x: number): number
+function add(x: string): string
+function add(x: any): any {
+  return x + ''
+}
+let aaa = add(1)
