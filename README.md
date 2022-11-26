@@ -595,3 +595,108 @@ type TupleToObject1<T extends string[]> = {
   [key in T[number]] : key
 }
 ```
+
+# class instance 
+## 继承
+```ts
+class Student extends Person {
+  study() {
+    console.log(`${this.name} needs study`);
+  }
+}
+const s1 = new Student("lin");
+s1.study();
+
+```
+
+## public 公有的，一个类里默认所有的方法和属性都是 public。
+## private 私有的，只属于这个类自己，它的实例和继承它的子类都访问不到。
+## protected  受保护的，继承它的子类可以访问，实例不能访问。
+## static 是静态属性，可以理解为是类上的一些常量，实例不能访问
+## 抽象类
+1. 所谓抽象类，是指只能被继承，但不能被实例化的类，就这么简单
+2. 抽象类中的  抽象方法  必须被子类实现
+```ts
+abstract class Animal {
+  constructor(name: string) {
+    this.name = name;
+  }
+  public name: string;
+  public abstract sayHi(): void;
+}
+
+class Dog extends Animal {
+  constructor(name: string) {
+    super(name);
+  }
+  public sayHi() {
+    console.log("wang");
+  }
+}
+```
+
+## 抽象方法和多态
+多态指的是，父类定义一个抽象方法，在多个子类中有不同的实现，运行的时候不同的子类就对应不同的操作
+```ts
+abstract class Animal {
+  constructor(name: string) {
+    this.name = name;
+  }
+  public name: string;
+  public abstract sayHi(): void;
+}
+
+class Dog extends Animal {
+  constructor(name: string) {
+    super(name);
+  }
+  public sayHi() {
+    console.log("wang");
+  }
+}
+
+class Cat extends Animal {
+  constructor(name: string) {
+    super(name);
+  }
+  public sayHi() {
+    console.log("miao");
+  }
+}
+```
+
+## interface 和 class 的关系
+1. interface 同样可以用来约束 class，要实现约束，需要用到 implements 关键字
+2. implements 是实现的意思，class 实现 interface。
+```ts
+interface MusicInterface1 {
+  playMusic(): void;
+}
+
+interface CallInterface {
+  makePhoneCall(): void;
+}
+
+class Cellphone implements MusicInterface1, CallInterface {
+  playMusic() {}
+  makePhoneCall() {}
+}
+```
+## 约束构造函数和静态属性
+使用 implements 只能约束类实例上的属性和方法，要约束构造函数和静态属性
+```ts
+
+interface CircleStatic {
+  new (radius: number): void;
+  pi: number;
+}
+
+const Circle: CircleStatic = class Circle {
+  static pi: 3.14;
+  public radius: number;
+  public constructor(radius: number) {
+    this.radius = radius;
+  }
+};
+
+```

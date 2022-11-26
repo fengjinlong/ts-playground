@@ -86,3 +86,92 @@ class M implements MusicInterface {
     return "";
   }
 }
+
+interface CircleStatic {
+  new (radius: number): void;
+  pi: number;
+}
+// static 是静态属性，可以理解为是类上的一些常量，实例不能访问。
+const Circle: CircleStatic = class Circle {
+  static pi: number;
+  public radius: number;
+  public constructor(radius: number) {
+    this.radius = radius;
+  }
+};
+
+class Student extends Person {
+  study() {
+    console.log(`${this.name} needs study`);
+  }
+}
+const s1 = new Student("lin");
+s1.study();
+abstract class Animal {
+  constructor(name: string) {
+    this.name = name;
+  }
+  public name: string;
+  public abstract sayHi(): void;
+}
+
+class Dog extends Animal {
+  constructor(name: string) {
+    super(name);
+  }
+  public sayHi() {
+    console.log("wang");
+  }
+}
+
+abstract class Animal5 {
+  constructor(name: string) {
+    this.name = name;
+  }
+  public name: string;
+  public abstract sayHi(): void;
+}
+
+class Dog5 extends Animal5 {
+  constructor(name: string) {
+    super(name);
+  }
+  public sayHi() {
+    console.log("wang");
+  }
+}
+
+class Cat extends Animal5 {
+  constructor(name: string) {
+    super(name);
+  }
+  public sayHi() {
+    console.log("miao");
+  }
+}
+
+interface MusicInterface1 {
+  playMusic(): void;
+}
+
+interface CallInterface {
+  makePhoneCall(): void;
+}
+
+class Cellphone implements MusicInterface1, CallInterface {
+  playMusic() {}
+  makePhoneCall() {}
+}
+
+interface CircleStatic {
+  new (radius: number): void;
+  pi: number;
+}
+
+const Circle: CircleStatic = class Circle {
+  static pi: 3.14;
+  public radius: number;
+  public constructor(radius: number) {
+    this.radius = radius;
+  }
+};
