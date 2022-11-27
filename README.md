@@ -721,3 +721,22 @@ interface Point extends PartialPointX { y: number; }
 interface PartialPointX { x: number; }
 type Point = PartialPointX & { y: number; };
 ```
+
+```ts
+type Permutation8<U, r = U> = [U] extends [never]
+  ? []
+  : r extends infer Temp
+  ? [Temp, ...Permutation8<Exclude<U, Temp>>]
+  : [];
+
+type perm = Permutation8<"A" | "B" | "C">;
+// ['A', 'B', 'C'] | ['A', 'C', 'B'] | ['B', 'A', 'C'] | ['B', 'C', 'A'] | ['C', 'A', 'B'] | ['C', 'B', 'A']
+
+type Flatten<Arr extends unknown[]> = Arr extends [infer f, ...infer R]
+  ? f extends any[]
+    ? Flatten<[...f, ...R]>
+    : [f, ...Flatten<[...R]>]
+  : [];
+
+type flatten = Flatten<[1, 2, [3, 4], [[[5]]]]>; // [1, 2, 3, 4, 5]
+```
