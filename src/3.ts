@@ -531,10 +531,20 @@ type M1d<F, S> = {
     : never;
 };
 
-type KebabCase<Str> = Str extends `${infer f}${infer r}`
-  ? r extends Uppercase<r>
-    ? `${Uncapitalize<f>}${KebabCase<r>}`
-    : `${Uncapitalize<f>}-${KebabCase<r>}`
+// type KebabCase<Str> = Str extends `${infer f}${infer r}`
+//   ? r extends Uppercase<r>
+//     ? `${Uncapitalize<f>}${KebabCase<r>}`
+//     : `${Uncapitalize<f>}-${KebabCase<r>}`
+//   : Str;
+type KebabCase<
+  Str,
+  b extends boolean = true
+> = Str extends `${infer f}${infer r}`
+  ? f extends Uppercase<f>
+    ? b extends true
+      ? `${Lowercase<f>}${KebabCase<r, false>}`
+      : `-${Lowercase<f>}${KebabCase<r, false>}`
+    : `${f}${KebabCase<r, false>}`
   : Str;
 type FooBarBaz = KebabCase<"FooBarBaz">;
 const foobarbaz: FooBarBaz = "foo-bar-baz";
@@ -542,8 +552,23 @@ const foobarbaz: FooBarBaz = "foo-bar-baz";
 type DoNothing = KebabCase<"do-nothing">;
 const doNothing: DoNothing = "do-nothing";
 
-type KebabCase666<S> = S extends `${infer C}${infer T}`
-  ? T extends Uncapitalize<T>
-    ? `${Uncapitalize<C>}${KebabCase<T>}`
-    : `${Uncapitalize<C>}-${KebabCase<T>}`
-  : S;
+// type KebabCase666<S> = S extends `${infer C}${infer T}`
+//   ? T extends Uncapitalize<T>
+//     ? `${Uncapitalize<C>}${KebabCase<T>}`
+//     : `${Uncapitalize<C>}-${KebabCase<T>}`
+//   : S;
+type Diff<
+  o extends Record<PropertyKey, unknown>,
+  o1 extends Record<PropertyKey, unknown>
+> = {
+  [key in keyof (Omit<o, keyof o1> & Omit<o1, keyof o>)]: key extends keyof o
+    ? o[key]
+    : o1[key];
+};
+
+// type Diff<
+// 	O extends Record<PropertyKey, unknown>,
+//         O1 extends Record<PropertyKey, unknown>
+// > = {
+//        [Key in keyof (Omit<O, keyof O1> & Omit<O1, keyof O>)]: Key extends keyof O ? O[Key] : O1[Key]
+// }

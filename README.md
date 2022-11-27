@@ -740,3 +740,12 @@ type Flatten<Arr extends unknown[]> = Arr extends [infer f, ...infer R]
 
 type flatten = Flatten<[1, 2, [3, 4], [[[5]]]]>; // [1, 2, 3, 4, 5]
 ```
+
+### 联合类型
+```ts
+type IsUnion<A, B = A> = A extends A ? ([B] extends [A] ? false : true) : false;
+```
+### never
+```ts
+type IsNever<T> = [T] extends [never] ? true : false;
+```
