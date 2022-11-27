@@ -168,10 +168,95 @@ interface CircleStatic {
   pi: number;
 }
 
-const Circle: CircleStatic = class Circle {
+const Circle9: CircleStatic = class Circle {
   static pi: 3.14;
   public radius: number;
   public constructor(radius: number) {
     this.radius = radius;
   }
 };
+interface D {
+  d: boolean;
+}
+interface E {
+  e: string;
+}
+interface F {
+  f: number;
+}
+
+interface A {
+  x: D;
+}
+interface B {
+  x: E;
+}
+interface C {
+  x: F;
+}
+
+type ABC = A & B & C;
+
+let abc: ABC = {
+  x: {
+    d: true,
+    e: "semlinker",
+    f: 666,
+  },
+};
+
+console.log("abc:", abc);
+
+class Person2 {
+  #name: string;
+
+  constructor(name: string) {
+    this.#name = name;
+  }
+
+  greet() {
+    console.log(`Hello, my name is ${this.#name}!`);
+  }
+}
+
+let semlinker = new Person2("Semlinker");
+
+semlinker.greet();
+
+//     ~~~~~
+// Property '#name' is not accessible outside class 'Person'
+// because it has a private identifier.
+
+function Greeter(target: Function): void {
+  target.prototype.greet = function (): void {
+    console.log("Hello Semlinker!");
+  };
+}
+
+@Greeter
+class Greeting {
+  constructor() {
+    // 内部实现
+  }
+}
+
+let myGreeting = new Greeting();
+(myGreeting as any).greet(); // console output: 'Hello Semlinker!';
+
+function Greeter(greeting: string) {
+  return function (target: Function) {
+    target.prototype.greet = function (): void {
+      console.log(greeting);
+    };
+  };
+}
+
+@Greeter("Hello TS!")
+class Greeting {
+  constructor() {
+    // 内部实现
+  }
+}
+
+let myGreeting = new Greeting();
+(myGreeting as any).greet(); // console output: 'Hello TS!';

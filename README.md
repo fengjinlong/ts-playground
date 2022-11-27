@@ -700,3 +700,24 @@ const Circle: CircleStatic = class Circle {
 };
 
 ```
+
+### interface type
+```ts
+// Interface extends interface
+interface PartialPointX { x: number; }
+interface Point extends PartialPointX { 
+  y: number; 
+}
+
+// Type alias extends type alias
+type PartialPointX = { x: number; };
+type Point = PartialPointX & { y: number; };
+
+// Interface extends type alias
+type PartialPointX = { x: number; };
+interface Point extends PartialPointX { y: number; }
+
+// Type alias extends interface
+interface PartialPointX { x: number; }
+type Point = PartialPointX & { y: number; };
+```
