@@ -18,3 +18,69 @@ type IsUnion1<T, B = T> = T extends never
   ? true
   : false;
 type IsUnion<A, B = A> = A extends A ? ([B] extends [A] ? false : true) : false;
+
+type Foo = {
+  [key: string]: any;
+  foo(): void;
+};
+type RemoveIndexSignature<T> = {
+  [Key in keyof T as string extends Key
+    ? never
+    : number extends Key
+    ? never
+    : symbol extends Key
+    ? never
+    : Key]: T[Key];
+};
+type RemoveIndexSignature1<T> = {
+  [Key in keyof T as keyof any extends T[Key] ? never : Key]: T[Key];
+};
+type A1 = RemoveIndexSignature1<Foo>; // expected { foo(): void }
+
+type PString1 = "";
+type PString2 = "+85%";
+type PString3 = "-85%";
+type PString4 = "85%";
+type PString5 = "85";
+type PercentageParser<S> = [
+  S extends `${infer f}${infer r}` ? (f extends "+" | "-" | S ? S : "") : "",
+  S extends `${"+" | "-"}${infer r}%`
+    ? r
+    : S extends `${"+" | "-"}${infer r}`
+    ? r
+    : S extends `${infer r}`
+    ? r
+    : S,
+  S extends `${infer r}%` ? "%" : ""
+];
+type R1 = PercentageParser<PString1>; // expected ['', '', '']
+type R2 = PercentageParser<PString2>; // expected ["+", "85", "%"]
+type R3 = PercentageParser<PString3>; // expected ["-", "85", "%"]
+type R4 = PercentageParser<PString4>; // expected ["", "85", "%"]
+type R5 = PercentageParser<PString5>; // expected ["", "85", ""]
+
+type DropChar<T, b> = T extends `${infer f}${infer r}`
+  ? f extends b
+    ? DropChar<r, b>
+    : `${f}${DropChar<r, b>}`
+  : T;
+type Butterfly = DropChar<" b u t t e r f l y ! ", " ">; // 'butterfly!'
+
+type b = "adca";
+type aaa<t> = t extends `${infer r}${infer rr}` ? `${r}` | `${aaa<rr>}` : never;
+type as = aaa<b>;
+type am = Omit<1 | 2 | 3, 2>;
+
+type MinusOne<
+  N,
+  A extends unknown[] = [1],
+  B extends unknown[] = []
+> = A["length"] extends N ? B["length"] : MinusOne<N, [...A, 1], [...B, 1]>;
+
+type B2<N, arr extends unknown[] = []> = arr["length"] extends N
+  ? arr
+  : B2<N, [...arr, 1]>;
+
+type MinusOne2<N> = B2<N> extends [...infer r, infer b] ? r["length"] : -1;
+type Zero = MinusOne2<1>; // 0
+type FiftyFour = MinusOne2<55>; // 54
