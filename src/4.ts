@@ -84,3 +84,10 @@ type B2<N, arr extends unknown[] = []> = arr["length"] extends N
 type MinusOne2<N> = B2<N> extends [...infer r, infer b] ? r["length"] : -1;
 type Zero = MinusOne2<1>; // 0
 type FiftyFour = MinusOne2<55>; // 54
+
+type Flip<T extends Record<PropertyKey, any>> = {
+  [Key in keyof T as T[Key] extends PropertyKey ? T[Key] : `${T[Key]}`]: Key;
+};
+type a = Flip<{ a: "x"; b: "y"; c: "z" }>; // {x: 'a', y: 'b', z: 'c'}
+type a1a = Flip<{ a: 1; b: 2; c: 3 }>; // {1: 'a', 2: 'b', 3: 'c'}
+type ooa = Flip<{ a: false; b: true }>; // {false: 'a', true: 'b'}
