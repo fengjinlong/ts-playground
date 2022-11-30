@@ -33,3 +33,18 @@ type IsTuple<T> = [T] extends [never]
     ? false
     : true
   : false;
+
+type exp1 = Chunk<[1, 2, 3], 2>; // expected to be [[1, 2], [3]]
+type exp2 = Chunk<[1, 2, 3], 4>; // expected to be [[1, 2, 3]]
+type exp3 = Chunk<[1, 2, 3], 1>; // expected to be [[1], [2], [3]]
+type Chunk<
+  Arr extends unknown[],
+  n,
+  C extends unknown[] = []
+> = C["length"] extends n
+  ? [C, ...Chunk<Arr, n>]
+  : Arr extends [infer f, ...infer r]
+  ? r extends []
+    ? [[...C, f]]
+    : Chunk<r, n, [...C, f]>
+  : [];
