@@ -49,7 +49,7 @@ type Chunk<
     : Chunk<r, n, [...C, f]>
   : [];
 
-  // 
+//
 type Without<T, n> = T extends []
   ? T
   : T extends [infer f, ...infer l]
@@ -57,15 +57,15 @@ type Without<T, n> = T extends []
     ? Without<l, n>
     : [f, ...Without<l, n>]
   : never;
-type Res = Without<[1, 2], 1>; // expected to be [2]
-type Res1 = Without<[1, 2, 4, 1, 5], [1, 2]>; // expected to be [4, 5]
-type Res2 = Without<[2, 3, 2, 3, 2, 3, 2, 3], [2, 3]>; // expected to be []
+type Res5 = Without<[1, 2], 1>; // expected to be [2]
+type Res15 = Without<[1, 2, 4, 1, 5], [1, 2]>; // expected to be [4, 5]
+type Res25 = Without<[2, 3, 2, 3, 2, 3, 2, 3], [2, 3]>; // expected to be []
 
-// 
-type Res = IndexOf<[1, 2, 3], 2>; // expected to be 1
-type Res1 = IndexOf<[2,6, 3,8,4,1,7, 3,9], 3>; // expected to be 2
-type Res2 = IndexOf<[0, 0, 0], 2>; // expected to be -1
-type IndexOf<Arr,n,R extends unknown[]=[]> Arr extends [infer f, ...infer r]? f extends n?R['length']:IndexOf<r,n,[...R,1]>:-1
+//
+// type Res6 = IndexOf<[1, 2, 3], 2>; // expected to be 1
+// type Res16 = IndexOf<[2,6, 3,8,4,1,7, 3,9], 3>; // expected to be 2
+// type Res26= IndexOf<[0, 0, 0], 2>; // expected to be -1
+// type IndexOf<Arr,n,R extends unknown[]=[]> Arr extends [infer f, ...infer r]? f extends n?R['length']:IndexOf<r,n,[...R,1]>:-1
 
 type Res = Join<["a", "p", "p", "l", "e"], "-">; // expected to be 'a-p-p-l-e'
 type Res1 = Join<["Hello", "World"], " ">; // expected to be 'Hello World'
@@ -80,7 +80,7 @@ type Join<Arr extends unknown[], j extends string | number> = Arr extends [
   ? `${f}${j}${Join<r, j>}`
   : "";
 
-  type Res11 = LastIndexOf<[1, 2, 3, 2, 1], 2>; // 3
+type Res11 = LastIndexOf<[1, 2, 3, 2, 1], 2>; // 3
 type Res21 = LastIndexOf<[0, 0, 0], 2>; // -1
 
 type B<n, arr extends unknown[] = []> = arr["length"] extends n
@@ -95,8 +95,8 @@ type LastIndexOf<Arr, n, r extends unknown[] = B<Arr["length"]>> = Arr extends [
     : LastIndexOf<l, n, B<l["length"]>>
   : -1;
 
-
 // 去重复
+type Equal<a, b> = [a] extends [b] ? true : false;
 type aqaa = Unique<[1, 2, 3, 1, 2, 3]>;
 type Includes1<T, U> = U extends [infer F, ...infer Rest]
   ? Equal<F, T> extends true
@@ -109,3 +109,65 @@ type Unique<T, U extends any[] = []> = T extends [infer R, ...infer F]
     ? Unique<F, [...U]>
     : Unique<F, [...U, R]>
   : U;
+
+//
+type CombinationForUnion<
+  U extends string,
+  T extends string = U
+> = T extends unknown
+  ? T | `${T} ${CombinationForUnion<Exclude<U, T>>}`
+  : never;
+type arr = ["1", "2", "3"];
+type arrr = CombinationForUnion<arr[number]>;
+// expected to be `"foo" | "bar" | "baz" | "foo bar" | "foo bar baz" | "foo baz" | "foo baz bar" | "bar foo" | "bar foo baz" | "bar baz" | "bar baz foo" | "baz foo" | "baz foo bar" | "baz bar" | "baz bar foo"`
+type Keys = Combination<["foo", "bar", "baz"]>;
+type Combination<Arr extends any[]> = CombinationForUnion<Arr[number]>;
+
+// type
+type A1 = Subsequence<[1, 2]>; // [] | [1] | [2] | [1, 2]
+type Subsequence<Arr> = Arr extends [infer f, ...infer r]
+  ? Subsequence<r> | [f, ...Subsequence<r>]
+  : [];
+
+// type
+type GetMiddleElement<
+  Arr,
+  T extends unknown[] = [],
+  R extends unknown[] = []
+> = Arr extends [infer f, ...infer r, infer l]
+  ? T["length"] extends Arr["length"]
+    ? R
+    : GetMiddleElement<r, [...T, f, l], [f, l]>
+  : Arr extends [infer f, ...infer r]
+  ? GetMiddleElement<r, [...T, f], [f]>
+  : R;
+type simple1 = GetMiddleElement<[1, 2, 3, 4, 5, 6, 7]>; // expected to be [3]
+type simple2 = GetMiddleElement<[1, 2, 3, 4, 5, 6]>; // expected to be [3, 4]
+
+type Integer<T> = T extends number | string
+  ? `${T}` extends `${string}.${string}`
+    ? never
+    : `${T}`
+  : never;
+type aad = Integer<1.8>;
+
+type Test1 = [1, 1, 1];
+type Test2 = [1, 1, 2];
+
+type Todo = All<Test1, 1>; // should be same as true
+type Todo2 = All<Test2, 1>; // should be same as false
+type All1<T, n, res extends unknown[] = []> = T extends [infer f, ...infer r]
+  ? f extends n
+    ? All1<r, n, [...res, 1]>
+    : All1<r, n, [...res]>
+  : res;
+
+type All<T extends unknown[], n> = T["length"] extends All1<T, n>["length"]
+  ? true
+  : false;
+
+type Filter<T extends unknown[], P> = T extends [infer F, ...infer L]
+  ? F extends P
+    ? [F, ...Filter<L, P>]
+    : Filter<L, P>
+  : [];

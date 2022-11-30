@@ -30,3 +30,85 @@ type Flip<T extends Record<PropertyKey, any>> = {
 type a = Flip<{ a: "x"; b: "y"; c: "z" }>; // {x: 'a', y: 'b', z: 'c'}
 type a1a = Flip<{ a: 1; b: 2; c: 3 }>; // {1: 'a', 2: 'b', 3: 'c'}
 type ooa = Flip<{ a: false; b: true }>; // {false: 'a', true: 'b'}
+
+// type
+type X = {
+  name: "Tom";
+  age: 30;
+  married: false;
+  addr: {
+    home: "123456";
+    phone: "13111111111";
+  };
+};
+
+type Expected = {
+  name: string;
+  age: number;
+  married: boolean;
+  addr: {
+    home: string;
+    phone: string;
+  };
+};
+type Todo = ToPrimitive<X>; // should be same as `Expected`
+type ToPrimitive<T> = {
+  [k in keyof T]: T[k] extends string
+    ? string
+    : T[k] extends number
+    ? number
+    : T[k] extends boolean
+    ? boolean
+    : ToPrimitive<T[k]>;
+};
+
+// type
+type X1 = {
+  readonly a: () => 1;
+  readonly b: string;
+  readonly c: {
+    readonly d: boolean;
+    readonly e: {
+      readonly g: {
+        readonly h: {
+          readonly i: true;
+          readonly j: "s";
+        };
+        readonly k: "hello";
+      };
+    };
+  };
+};
+
+type Expected1 = {
+  a: () => 1;
+  b: string;
+  c: {
+    d: boolean;
+    e: {
+      g: {
+        h: {
+          i: true;
+          j: "s";
+        };
+        k: "hello";
+      };
+    };
+  };
+};
+
+type Todo1 = DeepMutable<X1>; // should be same as `Expected1`
+
+type DeepMutable<T> = {
+  -readonly [Key in keyof T]: T[Key] extends object
+    ? DeepMutable<T[Key]>
+    : T[Key];
+};
+
+type DeepMutable1<T extends object> = {
+  -readonly [P in keyof T]: T[P] extends (...args: unknown[]) => unknown
+    ? T[P]
+    : T[P] extends object
+    ? DeepMutable<T[P]>
+    : T[P];
+};
