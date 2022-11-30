@@ -94,3 +94,18 @@ type LastIndexOf<Arr, n, r extends unknown[] = B<Arr["length"]>> = Arr extends [
     ? l["length"]
     : LastIndexOf<l, n, B<l["length"]>>
   : -1;
+
+
+// 去重复
+type aqaa = Unique<[1, 2, 3, 1, 2, 3]>;
+type Includes1<T, U> = U extends [infer F, ...infer Rest]
+  ? Equal<F, T> extends true
+    ? true
+    : Includes1<T, Rest>
+  : false;
+
+type Unique<T, U extends any[] = []> = T extends [infer R, ...infer F]
+  ? Includes1<R, U> extends true
+    ? Unique<F, [...U]>
+    : Unique<F, [...U, R]>
+  : U;
