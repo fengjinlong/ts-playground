@@ -749,3 +749,15 @@ type IsUnion<A, B = A> = A extends A ? ([B] extends [A] ? false : true) : false;
 ```ts
 type IsNever<T> = [T] extends [never] ? true : false;
 ```
+
+## 技巧
+#### 对象相关取值
+1. 取 value, T[keyof T]
+2. 取 key，先将 val 变为 key，在 T[keyof T]
+3. 去掉非必需属性
+```ts
+// 删除这个属性后，还是自己
+type GetRequired<T> = {
+  [Key in keyof T as Omit<T, Key> extends T ? never : Key]: T[Key];
+};
+```

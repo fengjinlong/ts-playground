@@ -112,3 +112,30 @@ type DeepMutable1<T extends object> = {
     ? DeepMutable<T[P]>
     : T[P];
 };
+//
+type I = GetRequired<{ foo: number; bar?: string }>; // expected to be { foo: number }
+type GetRequired<T> = {
+  [Key in keyof T as Omit<T, Key> extends T ? never : Key]: T[Key];
+};
+
+type I12 = GetOptional<{ foo: number; bar?: string }>; // expected to be { bar?: string }
+type GetOptional<T> = {
+  [Key in keyof T as Omit<T, Key> extends T ? Key : never]: T[Key];
+};
+
+type Result = RequiredKeys<{ foo: number; bar?: string; c?: number }>;
+// expected to be “foo”
+/**
+ * 1 必须属性
+ * 2 val 变 key
+ * 3 T[keyof T]
+ */
+// 2
+type C<T> = {
+  [Key in keyof T]: Key;
+};
+type RequiredKeys<T> = C<GetRequired<T>>[keyof C<GetRequired<T>>];
+type Result1 = RequiredKeys1<{ foo: number; bar?: string; c?: number }>;
+// expected to be “foo”|'c'
+
+type RequiredKeys1<T> = C<GetOptional<T>>[keyof C<GetOptional<T>>];

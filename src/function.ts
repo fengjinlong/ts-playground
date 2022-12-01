@@ -23,3 +23,35 @@ type Fibonacci<
   : Fibonacci<N, [...Arr, 1], curr, [...prev, ...curr]>;
 type Result1 = Fibonacci<3>; // 2
 type Result2 = Fibonacci<8>; // 21
+
+// 柯里化
+const add = (a: number, b: number) => a + b;
+const three = add(1, 2);
+
+const curriedAdd = Currying(add);
+const five = curriedAdd(2)(3);
+type Currying<Fn> = Fn extends (...args: [infer F, ...infer R]) => infer T
+  ? R extends []
+    ? Fn
+    : (args: F) => Currying<(...args: [...R]) => T>
+  : never;
+
+//
+type I1 = UnionToIntersection<"foo" | 42 | true>; // expected to be 'foo' & 42 & true
+// type I11 = {
+//   a: 1;
+// } & {
+//   b: 2;
+// };
+type I11 = UnionToIntersection<{ a: 1 } | { b: 2 }>;
+
+type UToFu<U> = U extends unknown ? (arg: U) => unknown : never;
+type Union2Intersection<U> = UToFu<U> extends (args: infer A) => unknown
+  ? A
+  : never;
+
+type UnionToIntersection<U> = (U extends U ? (a: U) => void : never) extends (
+  a: infer R
+) => void
+  ? R
+  : never;
