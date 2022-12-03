@@ -55,3 +55,32 @@ type UnionToIntersection<U> = (U extends U ? (a: U) => void : never) extends (
 ) => void
   ? R
   : never;
+
+// your answers
+
+type StringJoin<D extends string, T extends Array<string>> = T extends [
+  `${infer F}`,
+  ...infer R extends string[]
+]
+  ? R extends []
+    ? F
+    : `${F}${D}${StringJoin<D, R>}`
+  : "";
+
+declare function join<D extends string>(
+  delimiter: D
+): <T extends Array<string>>(...parts: T) => StringJoin<D, T>;
+
+// type aa = join('#')('a', 'b', 'c') // = 'a#b#c'
+declare function join11<D extends string>(
+  d: D
+): <T extends string[]>(...p: T) => Fun<D, T>;
+
+type Fun<D extends string, T extends string[]> = T extends [
+  `${infer F}`,
+  ...infer R extends string[]
+]
+  ? R extends []
+    ? F
+    : `${F}${D}${Fun<D, R>}`
+  : "";

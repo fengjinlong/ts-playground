@@ -171,3 +171,19 @@ type Filter<T extends unknown[], P> = T extends [infer F, ...infer L]
     ? [F, ...Filter<L, P>]
     : Filter<L, P>
   : [];
+
+//
+type Filtered = FilterOut<[1, null, 2, null, 3], null>; // [1, 2, 3]
+type FilterOut<T, A> = T extends [infer F, ...infer L]
+  ? F extends A
+    ? FilterOut<L, A>
+    : [F, ...FilterOut<L, A>]
+  : [];
+
+type T0 = LastIndexOf1<"foo">; // 3
+type LastIndexOf1<
+  T,
+  Arr extends unknown[] = []
+> = T extends `${infer f}${infer r}`
+  ? LastIndexOf1<r, [...Arr, 1]>
+  : Arr["length"];

@@ -139,3 +139,60 @@ type Result1 = RequiredKeys1<{ foo: number; bar?: string; c?: number }>;
 // expected to be “foo”|'c'
 
 type RequiredKeys1<T> = C<GetOptional<T>>[keyof C<GetOptional<T>>];
+
+// Get
+type Data = {
+  foo: {
+    bar: {
+      value: "foobar";
+      count: 6;
+    };
+    included: true;
+  };
+  hello: "world";
+};
+
+type A = Get<Data, "hello">; // 'world'
+type B = Get<Data, "foo.bar.count">; // 6
+type C1 = Get<Data, "foo.bar">; // { value: 'foobar', count: 6 }
+
+type Get<T, K extends string> = K extends keyof T
+  ? T[K]
+  : K extends `${infer K1}.${infer K2}`
+  ? K1 extends keyof T
+    ? Get<T[K1], K2>
+    : never
+  : never;
+
+//
+
+type obj = {
+  name: "hoge";
+  age: 20;
+  friend: {
+    name: "fuga";
+    age: 30;
+    family: {
+      name: "baz";
+      age: 1;
+    };
+  };
+};
+
+type T1 = DeepPick<obj, "name">; // { name : 'hoge' }
+type T2 = DeepPick<obj, "name" | "friend.name">; // { name : 'hoge' } & { friend: { name: 'fuga' }}
+type T3 = DeepPick<obj, "name" | "friend.name" | "friend.family.name">; // { name : 'hoge' } &  { friend: { name: 'fuga' }} & { friend: { family: { name: 'baz' }}}
+
+type DeepPick<T extends Record<string, any>, U extends string> = (
+  U extends string
+    ? U extends `${infer F}.${infer R}`
+      ? (arg: {
+          [K in F]: DeepPick<T[F], R>;
+        }) => void
+      : U extends keyof T
+      ? (arg: Pick<T, U>) => void
+      : (arg: unknown) => void
+    : never
+) extends (arg: infer Z) => void
+  ? Z
+  : never;
