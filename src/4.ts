@@ -91,3 +91,12 @@ type Flip<T extends Record<PropertyKey, any>> = {
 type a = Flip<{ a: "x"; b: "y"; c: "z" }>; // {x: 'a', y: 'b', z: 'c'}
 type a1a = Flip<{ a: 1; b: 2; c: 3 }>; // {1: 'a', 2: 'b', 3: 'c'}
 type ooa = Flip<{ a: false; b: true }>; // {false: 'a', true: 'b'}
+
+type IsAny<T> = "any" extends 1 & T ? true : false;
+type IsAny2<T> = (<A>() => A extends T ? 1 : 0) extends <A>() => A extends any
+  ? 1
+  : 0
+  ? true
+  : false;
+type ee22 = IsAny2<number>; //
+type ee2 = IsAny2<any>;

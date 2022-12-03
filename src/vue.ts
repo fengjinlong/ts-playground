@@ -1,3 +1,4 @@
+export {};
 type GetPropsIns<T> = T extends new (...args: any[]) => infer P
   ? T extends (...args: any[]) => infer R
     ? R
@@ -31,4 +32,26 @@ declare function VueBasicProps<P = {}, D = {}, C = {}, M = {}>(
   options: Options<P, D, C, M>
 ): any;
 
-export {};
+const instance = VueBasicProps({
+  props: {
+    foo: { type: [Boolean, Number, String] },
+    boo: 1,
+  },
+  data() {
+    return {
+      firstname: "Type",
+      lastname: "Challenges",
+      amount: 10,
+    };
+  },
+  computed: {
+    fullname() {
+      return this.firstname + " " + this.lastname;
+    },
+  },
+  methods: {
+    hi() {
+      alert(this.fullname.toLowerCase());
+    },
+  },
+});
