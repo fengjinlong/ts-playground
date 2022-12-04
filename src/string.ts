@@ -1,5 +1,5 @@
 export {};
-type AllCombinations_ABC = AllCombinations<"ABC">;
+// type AllCombinations_ABC = AllCombinations<"ABC">;
 // should be '' | 'A' | 'B' | 'C' | 'AB' | 'AC' | 'BA' | 'BC' | 'CA' | 'CB' | 'ABC' | 'ACB' | 'BAC' | 'BCA' | 'CAB' | 'CBA'
 
 // 首字母大写
@@ -66,3 +66,26 @@ type Format<T extends string> = T extends `${string | ""}%${infer A}${infer B}`
     ? (s1: number) => Format<B>
     : Format<B>
   : string;
+
+type _CamelizeHelp<P> = P extends `${infer F}_${infer C}${infer Rest}`
+  ? `${F}${Uppercase<C>}${_CamelizeHelp<Rest>}`
+  : P;
+
+type Camelize<T> = T extends Record<string, unknown>
+  ? { [P in keyof T as _CamelizeHelp<P>]: Camelize<T[P]> }
+  : T extends [infer F, ...infer Rest]
+  ? [Camelize<F>, ...Camelize<Rest>]
+  : T;
+
+type aa = Camelize<{
+  some_prop: string;
+  prop: { another_prop: string };
+  array: [{ snake_case: string }];
+}>;
+
+// expected to be
+// {
+//   someProp: string,
+//   prop: { anotherProp: string },
+//   array: [{ snakeCase: string }]
+// }
