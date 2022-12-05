@@ -89,3 +89,30 @@ type aa = Camelize<{
 //   prop: { anotherProp: string },
 //   array: [{ snakeCase: string }]
 // }
+
+type Butterfly = DropString<"foobar!", "fb">; // 'ooar!'
+type aaa = Exclude<1 | 2 | 3, 3 | 1>; // 1|2
+type U<str> = str extends `${infer a}${infer b}` ? a | U<b> : never;
+type Ua<U, s extends string = ""> = U extends `${infer a}|${infer b}`
+  ? Ua<Exclude<U, a>, `${s}${a}`>
+  : `${s}${U}`;
+type Uaa1 = Ua<1 | 2 | 3>;
+type aaaa = U<"123">; // 1|2|3
+
+type A1<A, B, arr extends unknown[] = []> = A extends [infer F, ...infer R]
+  ? F extends B
+    ? A1<R, B, arr>
+    : A1<R, B, [...arr, F]>
+  : arr;
+
+type a222 = A1<[1, 2, 3, 4, 3], 3>;
+
+type Ste<str, s, r extends string = ""> = str extends `${infer a}${infer b}`
+  ? a extends s
+    ? Ste<b, s, r>
+    : Ste<b, s, `${r}${a}`>
+  : r;
+type DropString<str, s> = s extends `${infer a}${infer b}`
+  ? DropString<Ste<str, a>, b>
+  : Ste<str, s>;
+type aad = Ste<"123", "2">; // 13
