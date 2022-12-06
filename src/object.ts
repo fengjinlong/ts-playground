@@ -196,3 +196,19 @@ type DeepPick<T extends Record<string, any>, U extends string> = (
 ) extends (arg: infer Z) => void
   ? Z
   : never;
+
+interface Model {
+  name: string;
+  age: number;
+  locations: string[] | null;
+}
+
+type ModelEntries =
+  | ["name", string]
+  | ["age", number]
+  | ["locations", string[] | null];
+
+type result = ObjectFromEntries<ModelEntries>; // expected to be Model
+type ObjectFromEntries<T extends [string, unknown]> = {
+  [K in T as K[0]]: K[1];
+};

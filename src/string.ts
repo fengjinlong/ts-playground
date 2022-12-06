@@ -116,3 +116,15 @@ type DropString<str, s> = s extends `${infer a}${infer b}`
   ? DropString<Ste<str, a>, b>
   : Ste<str, s>;
 type aad = Ste<"123", "2">; // 13
+
+// your answers
+type Reverse<T extends string> = T extends `${infer First}${infer Rest}`
+  ? `${Reverse<Rest>}${First}`
+  : T;
+type adad = "asd" extends Reverse<"asd"> ? 1 : 2; // 321
+type nnn = "123" extends Reverse<"123"> ? 1 : 2;
+type IsPalindrome<T extends string | number> = `${T}` extends Reverse<`${T}`>
+  ? true
+  : false;
+type adaaa = IsPalindrome<"abc">; // false
+type adad = IsPalindrome<121>; // true
