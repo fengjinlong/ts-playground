@@ -196,3 +196,12 @@ type DeepPick<T extends Record<string, any>, U extends string> = (
 ) extends (arg: infer Z) => void
   ? Z
   : never;
+
+
+
+// Record 去除 ？
+
+type A3 = IsRequiredKey<{ a: number, b?: string },'a'> // true
+type B3 = IsRequiredKey<{ a: number, b?: string },'b'> // false
+type C3 = IsRequiredKey<{ a: number, b?: string },'b' | 'a'> // false
+type IsRequiredKey<T, K extends keyof T> = T extends Record<K, T[K]> ? true : false
