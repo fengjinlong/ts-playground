@@ -212,3 +212,12 @@ type result = ObjectFromEntries<ModelEntries>; // expected to be Model
 type ObjectFromEntries<T extends [string, unknown]> = {
   [K in T as K[0]]: K[1];
 };
+
+// Record 去除 ？
+
+type A3 = IsRequiredKey<{ a: number; b?: string }, "a">; // true
+type B3 = IsRequiredKey<{ a: number; b?: string }, "b">; // false
+type C3 = IsRequiredKey<{ a: number; b?: string }, "b" | "a">; // false
+type IsRequiredKey<T, K extends keyof T> = T extends Record<K, T[K]>
+  ? true
+  : false;
