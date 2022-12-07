@@ -221,3 +221,45 @@ type C3 = IsRequiredKey<{ a: number; b?: string }, "b" | "a">; // false
 type IsRequiredKey<T, K extends keyof T> = T extends Record<K, T[K]>
   ? true
   : false;
+
+type Keys9 = MutableKeys3<{ readonly foo: string; bar: number }>;
+// expected to be “bar”
+type MutableKeys<T> = keyof {
+  [key in keyof T as IsEqual<
+    Readonly<{ [k in key]: T[k] }>,
+    { [k in key]: T[k] }
+  > extends true
+    ? never
+    : key]: T[key];
+};
+
+let ob: Keys9 = {
+  foo: "1",
+};
+type IsEqual<A, B> = (<T>() => T extends A ? 1 : 2) extends <
+  T1
+>() => T1 extends B ? 1 : 2
+  ? true
+  : false;
+type MutableKeys1<T> = keyof {
+  [key in keyof T as IsEqual<
+    Readonly<{ [p in key]: T[p] }>,
+    { [p in key]: T[p] }
+  > extends true
+    ? never
+    : key]: T[key];
+};
+//
+type T15 = ObjectKeyPaths<{ name: string; age: number }>; // expected to be 'name' | 'age'
+type T25 = ObjectKeyPaths<{
+  refCount: number;
+  person: { name: string; age: number };
+}>; // expected to be 'refCount' | 'person' | 'person.name' | 'person.age'
+type T35 = ObjectKeyPaths<{ books: [{ name: string; price: number }] }>;
+// expected to be the superset of 'books' | 'books.0' | 'books[0]' | 'books.[0]' | 'books.0.name' | 'books.0.price' | 'books.length' | 'books.find'
+
+type ObjectKeyPaths<T> = keyof {
+  [k in keyof T as T[k] extends object
+    ? `${k & string}.${ObjectKeyPaths<T[k]> & string}`
+    : k]: T[k];
+};

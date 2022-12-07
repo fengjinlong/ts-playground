@@ -187,3 +187,14 @@ type LastIndexOf1<
 > = T extends `${infer f}${infer r}`
   ? LastIndexOf1<r, [...Arr, 1]>
   : Arr["length"];
+// 10 -> 2   0011 -> 3
+type R1es11 = BinaryToDecimal<"10">; // expected to be 2
+type R1es21 = BinaryToDecimal<"0011">; // expected to be 3
+type BinaryToDecimal<
+  str,
+  arr extends unknown[] = []
+> = str extends `${infer f}${infer r}`
+  ? f extends "1"
+    ? BinaryToDecimal<r, [...arr, ...arr, 1]>
+    : BinaryToDecimal<r, [...arr, ...arr]>
+  : arr["length"];
